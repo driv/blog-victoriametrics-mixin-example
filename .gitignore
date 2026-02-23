@@ -1,0 +1,9 @@
+# Dependencies managed by jsonnet-bundler
+vendor/
+
+# Generated Kubernetes manifests and dashboards
+generated/
+manifests.yaml
+
+# Temporary files
+vm-chart-values.yaml

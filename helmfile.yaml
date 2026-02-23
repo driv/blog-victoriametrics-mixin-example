@@ -1,0 +1,67 @@
+repositories:
+  - name: vm
+    url: https://victoriametrics.github.io/helm-charts/
+
+releases:
+  - name: vm-stack
+    namespace: monitoring
+    createNamespace: true
+    chart: vm/victoria-metrics-k8s-stack
+    values:
+      - argocd:
+          enabled: false
+      - victoria-metrics-operator:
+          createCRD: true 
+      - vmsingle:
+          enabled: true
+      - vmcluster:
+          enabled: false
+      - grafana:
+          enabled: true
+          sidecar:
+            dashboards:
+              enabled: true
+              label: grafana_dashboard
+              searchNamespace: ALL
+      # Fix for Kind: Disable TLS verification and add auth for control plane components
+      - kubeApiServer:
+          enabled: true
+          vmScrape:
+            spec:
+              endpoints:
+                - port: https # Kube API Server's secure metrics port
+                  scheme: https
+                  bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
+                  tlsConfig:
+                    insecureSkipVerify: true
+                    caFile: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt # Corrected typo
+      - kubeControllerManager:
+          enabled: true
+          vmScrape:
+            spec:
+              endpoints:
+                - port: http-metrics # Kube Controller Manager's secure metrics port
+                  scheme: https
+                  bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
+                  tlsConfig:
+                    insecureSkipVerify: true
+                    caFile: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt # Corrected typo
+      - kubeScheduler:
+          enabled: true
+          vmScrape:
+            spec:
+              endpoints:
+                - port: http-metrics # Kube Scheduler's secure metrics port
+                  scheme: https
+                  bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
+                  tlsConfig:
+                    insecureSkipVerify: true
+                    caFile: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt # Corrected typo
+      - kubeEtcd:
+          enabled: true
+          vmScrape:
+            spec:
+              endpoints:
+                - port: "2381" # Etcd's *insecure* metrics port (2381) as a string
+                  scheme: http # Use HTTP for Etcd's metrics
+                  # No bearerTokenFile or tlsConfig needed for insecure HTTP endpoint
