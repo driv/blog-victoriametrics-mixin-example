@@ -82,7 +82,7 @@ kubectl port-forward -n monitoring svc/grafana 3000:80
 
 Open [http://localhost:3000](http://localhost:3000) in your browser.
 - **User:** `admin`
-- **Password:** `prom-operator` (default for the chart)
+- **Password:** `admin` (default for the chart)
 
 You should see:
 - A rich set of Kubernetes dashboards (Compute Resources, Networking, etc.).
