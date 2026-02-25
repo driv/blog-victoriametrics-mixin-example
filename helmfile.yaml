@@ -22,7 +22,7 @@ releases:
             dashboards:
               enabled: true
               label: grafana_dashboard
-              searchNamespace: ALL
+              searchNamespace: monitoring
       # Fix for Kind: Disable TLS verification and add auth for control plane components
       - kubeApiServer:
           enabled: true
